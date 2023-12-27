@@ -7,6 +7,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Traits\CanLoadRelationships;
 use Illuminate\Http\Request;
 use App\Models\Event;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller
 {
@@ -15,6 +16,7 @@ class EventController extends Controller
     //we need to add middleware 'auth:sanctum' to add authentication requirement to routes
     public function __construct(){
         $this->middleware("auth:sanctum")->except(['index','show']);
+        $this->authorizeResource(Event::class,'event');
     }
 
     private array $relations = ['user','attendees','attendees.user'];
@@ -71,6 +73,15 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
+        //we need to use the gate we created to check whether thwe user can update this specific event or not
+        // if(Gate::denies('update-event', $event)) {
+        //     abort(403,'You are not authorized to update this event');
+        // }
+
+        //we can replace the above code for using the gate as follows
+        // $this->authorize('update-event', $event);
+
+
         //here in validate the sometimes checks for validation only sometimes and does not each and every time
         $event->update(
             $request->validate([
