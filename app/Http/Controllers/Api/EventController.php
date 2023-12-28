@@ -16,6 +16,7 @@ class EventController extends Controller
     //we need to add middleware 'auth:sanctum' to add authentication requirement to routes
     public function __construct(){
         $this->middleware("auth:sanctum")->except(['index','show']);
+        $this->middleware('throttle:api')->only(['store','update','destroy']);
         $this->authorizeResource(Event::class,'event');
     }
 
